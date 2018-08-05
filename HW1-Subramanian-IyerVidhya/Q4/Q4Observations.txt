@@ -1,0 +1,11 @@
+c.i.a) 47
+c.i.b) 5 columns are created of which 2 are removed as they do not have values
+
+
+c.ii) Keying Function : "metaphone3" creates 562 clusters which is the highest number of clusters
+
+c.iii)if(value=="null","Unbranded",value)
+
+
+c.iv)if(value.toNumber() > 100, "1", "0")
+c.v)if(or(value.contains("offer"),value.contains("discount"),value.contains("sale")),"1","0")

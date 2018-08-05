@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="../lib/d3.v3.min.js"></script>
+</head>
+<style type="text/css">
+
+    .axis path,
+    .axis line {
+        fill: none;
+  		stroke: black;
+  		shape-rendering: crispEdges;
+  		font-weight: bold;
+  			}
+    .point {
+	    fill: none;}
+    .axis text {
+  	    font-family: sans-serif;
+  		font-size: 11px;
+  		font-weight: bold;
+</style>
+<body>
+<script type="text/javascript">
+
+			var data_set = [];
+            var padding = 40;
+            var width = 800;
+	        var height = 600;
+	        var legendSize = 100
+            var labels = [["Bad", "red", "circle"], ["Good", "blue", "cross"]]
+
+            d3.csv("wine_quality.csv", function(data) {
+				data_set = data.map(function(d) {return [+d["pH"], +d["alcohol"], +d["quality"], +d["residual_sugar"], +d["sulphates"]]; });
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height)
+
+			var xscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[1]; })])
+				 .range([padding, width - legendSize - padding]);
+
+			var yscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([height - padding, padding]);
+
+			var wscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[1]; })])
+				 .range([10, 100]);
+
+
+			var shape = (data_set, function(d){
+				if (d[2] >= 6) {return "cross";}
+				else {return "circle";}
+			})
+
+  			svg.selectAll(".point")
+      			.data(data_set)
+    			.enter().append("path")
+      			.attr("class", "point")
+      			.attr("d", d3.svg.symbol().type(shape))
+      			.attr("transform", function(d) { return "translate(" + xscale(d[1]) + "," + yscale(d[0]) + ")"; })
+      			.attr("stroke", function(d){
+      				if (d[2] >= 6) {return "blue";}
+      				else {return "red";}
+      			});
+
+
+			var xAxis = d3.svg.axis()
+							  .scale(xscale)
+							  .orient("bottom")
+							  .ticks(5);
+			svg.append("text")
+              .attr("transform", "translate("+ (width-legendSize - padding) + "," + height+")")
+              .style("text-anchor", "end")
+              .text("Alcohol");
+
+      		 svg.append("text")
+              .attr("transform", "translate(60,50)rotate(-90)")
+              .style("text-anchor", "end")
+              .text("pH");
+
+
+              svg.append("text")
+              .attr("transform", "translate("+ ((width-legendSize)/2) + "," + (padding-15)+")")
+              .style("text-anchor", "end")
+              .text("pH  vs  Alcohol");
+
+      		 var yAxis = d3.svg.axis()
+							  .scale(yscale)
+							  .orient("left")
+							  .ticks(5);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (height - padding) + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding  + ",0)")
+				.call(yAxis);
+
+			var legendGroup = svg.append('g')
+                         .attr('class', 'legend')
+                         .attr('transform', "translate(700, 8)");
+
+	        var legendEntry = legendGroup.selectAll('g')
+                                 .data(labels);
+
+	        legendEntry.enter().append("g")
+                    .attr("class", "legend-entry")
+                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+	        legendEntry.append("path")
+                      .attr("class", "dot")
+                      .attr("d", d3.svg.symbol().type((d) => { return d[2] }))
+                      .attr("stroke", function (d) {return d[1];})
+                      .attr("fill" , "white");
+
+	        legendEntry.append("text")
+                      .attr("transform", "translate(10, 3)")
+                      .text(function(d) {return d[0];});
+
+      		// pH  vs Residual Sugar
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height);
+
+			var xscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[3]; })])
+				 .range([padding, width - padding * 2]);
+
+			var yscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([height - padding, padding]);
+
+			var wscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([10, 100]);
+
+			var shape = (data_set, function(d){
+				if (d[2] >= 6) {return "cross";}
+				else {return "circle";}
+			})
+
+  			svg.selectAll(".point")
+      			.data(data_set)
+    			.enter().append("path")
+      			.attr("class", "point")
+      			.attr("d", d3.svg.symbol().type(shape))
+      			.attr("transform", function(d) { return "translate(" + xscale(d[3]) + "," + yscale(d[0]) + ")"; })
+      			.attr("stroke", function(d){
+      				if (d[2] >= 6) {return "blue";}
+      				else {return "red";}
+      			});
+
+			var xAxis = d3.svg.axis()
+							  .scale(xscale)
+							  .orient("bottom")
+							  .ticks(5);
+			svg.append("text")
+              .attr("transform", "translate("+ (width-legendSize - padding) + "," + height+")")
+              .style("text-anchor", "end")
+              .text("Residual Sugar");
+
+      		 svg.append("text")
+              .attr("transform", "translate(60,50)rotate(-90)")
+              .style("text-anchor", "end")
+              .text("pH");
+
+
+              svg.append("text")
+              .attr("transform", "translate("+ ((width-legendSize)/2) + "," + (padding-15)+")")
+              .style("text-anchor", "end")
+              .text("pH  vs Residual Sugar");
+
+			var yAxis = d3.svg.axis()
+							  .scale(yscale)
+							  .orient("left")
+							  .ticks(5);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (height - padding) + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+
+
+			var legendGroup = svg.append('g')
+                         .attr('class', 'legend')
+                         .attr('transform', "translate(700, 10)");
+
+	        var legendEntry = legendGroup.selectAll('g')
+                                 .data(labels);
+
+	        legendEntry.enter().append("g")
+                    .attr("class", "legend-entry")
+                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+	        legendEntry.append("path")
+                      .attr("class", "dot")
+                      .attr("d", d3.svg.symbol().type((d) => { return d[2] }))
+                      .attr("stroke", function (d) {return d[1];})
+                      .attr("fill" , "white");
+
+	        legendEntry.append("text")
+                      .attr("transform", "translate(10, 3)")
+                      .text(function(d) {return d[0];});
+
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height);
+
+			var xscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[1]; })])
+				 .range([padding, width - padding * 2]);
+
+			var yscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([height - padding, padding]);
+
+			var wscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([1, 5]);
+
+			var size_scale = d3.scale.linear()
+				.domain([0, d3.max(data_set, function(d) { return d[0]*d[1]; })])
+				.range([200, 20]);
+
+			var shape = (data_set, function(d){
+				if (d[2] >= 6) {return "cross";}
+				else {return "circle";}
+			})
+
+			var size = (data_set, function(d) {
+				return size_scale(d[0]*d[1]);
+			})
+
+  			svg.selectAll(".point")
+      			.data(data_set)
+    			.enter().append("path")
+      			.attr("class", "point")
+      			.attr("d", d3.svg.symbol().size(size).type(shape))
+      			.attr("transform", function(d) { return "translate(" + xscale(d[1]) + "," + yscale(d[0]) + ")"; })
+      			.attr("stroke", function(d){
+      				if (d[2] >= 6) {return "blue";}
+      				else {return "red";}
+      			});
+
+			var xAxis = d3.svg.axis()
+							  .scale(xscale)
+							  .orient("bottom")
+							  .ticks(5);
+			svg.append("text")
+              .attr("transform", "translate("+ (width-legendSize - padding) + "," + height+")")
+              .style("text-anchor", "end")
+              .text("Alcohol");
+
+      		 svg.append("text")
+              .attr("transform", "translate(60,50)rotate(-90)")
+              .style("text-anchor", "end")
+              .text("pH");
+
+
+              svg.append("text")
+              .attr("transform", "translate("+ ((width-legendSize)/2) + "," + (padding-15)+")")
+              .style("text-anchor", "end")
+              .text("pH vs Alcohol (Scaled Symbols)");
+
+
+			var yAxis = d3.svg.axis()
+							  .scale(yscale)
+							  .orient("left")
+							  .ticks(5);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (height - padding) + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+
+            var legendGroup = svg.append('g')
+                         .attr('class', 'legend')
+                         .attr('transform', "translate(700, 10)");
+
+	        var legendEntry = legendGroup.selectAll('g')
+                                 .data(labels);
+
+	        legendEntry.enter().append("g")
+                    .attr("class", "legend-entry")
+                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+	        legendEntry.append("path")
+                      .attr("class", "dot")
+                      .attr("d", d3.svg.symbol().type((d) => { return d[2] }))
+                      .attr("stroke", function (d) {return d[1];})
+                      .attr("fill" , "white");
+
+	        legendEntry.append("text")
+                      .attr("transform", "translate(10, 3)")
+                      .text(function(d) {return d[0];});
+// Y-Axis: Square Root Scaling
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height);
+			var xscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([padding, width - padding * 2]);
+
+			var yscale = d3.scale.sqrt()
+				 .domain([0, d3.max(data_set, function(d) { return d[4]; })])
+				 .range([height - padding, padding]);
+
+			var wscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[4]; })])
+				 .range([1, 5]);
+
+			var size_scale = d3.scale.linear()
+				.domain([0, d3.max(data_set, function(d) { return d[0]*d[4]; })])
+				.range([20, 200]);
+
+			var shape = (data_set, function(d){
+				if (d[2] >= 6) {return "cross";}
+				else {return "circle";}
+			})
+
+			var size = (data_set, function(d) {
+				return size_scale(d[0]*d[4]);
+			})
+
+  			svg.selectAll(".point")
+      			.data(data_set)
+    			.enter().append("path")
+      			.attr("class", "point")
+      			.attr("d", d3.svg.symbol().type(shape))
+      			.attr("transform", function(d) { return "translate(" + xscale(d[0]) + "," + yscale(d[4]) + ")"; })
+      			.attr("stroke", function(d){
+      				if (d[2] >= 6) {return "blue";}
+      				else {return "red";}
+      			});
+
+
+			var xAxis = d3.svg.axis()
+							  .scale(xscale)
+							  .orient("bottom")
+							  .ticks(5);
+			svg.append("text")
+              .attr("transform", "translate("+ (width-legendSize - padding) + "," + height+")")
+              .style("text-anchor", "end")
+              .text("pH");
+
+			svg.append("text")
+              .attr("transform", "translate(60,50)rotate(-90)")
+              .style("text-anchor", "end")
+              .text("Sulphates");
+
+			svg.append("text")
+              .attr("transform", "translate("+ ((width-legendSize)/2) + "," + (padding-15)+")")
+              .style("text-anchor", "end")
+              .text("Sulphates vs pH (square root scaled)");
+
+
+			var yAxis = d3.svg.axis()
+							  .scale(yscale)
+							  .orient("left")
+							  .ticks(5);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (height - padding) + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+
+			var legendGroup = svg.append('g')
+                         .attr('class', 'legend')
+                         .attr('transform', "translate(700, 10)");
+
+	        var legendEntry = legendGroup.selectAll('g')
+                                 .data(labels);
+
+	        legendEntry.enter().append("g")
+                    .attr("class", "legend-entry")
+                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+	        legendEntry.append("path")
+                      .attr("class", "dot")
+                      .attr("d", d3.svg.symbol().type((d) => { return d[2] }))
+                      .attr("stroke", function (d) {return d[1];})
+                      .attr("fill" , "white");
+
+	        legendEntry.append("text")
+                      .attr("transform", "translate(10, 3)")
+                      .text(function(d) {return d[0];});
+
+// Y-Axis: Log Scaling
+
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height);
+
+			var xscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[0]; })])
+				 .range([padding, width - padding * 2]);
+
+			var yscale = d3.scale.log()
+				 .domain([0.1, d3.max(data_set, function(d) { return d[4]; })])
+				 .range([height - padding, padding])
+				 .clamp(true);
+
+			var wscale = d3.scale.linear()
+				 .domain([0, d3.max(data_set, function(d) { return d[4]; })])
+				 .range([1, 5]);
+
+			var size_scale = d3.scale.linear()
+				.domain([0, d3.max(data_set, function(d) { return d[0]*d[4]; })])
+				.range([20, 200]);
+
+			var shape = (data_set, function(d){
+				if (d[2] >= 0) {return "cross";}
+				else {return "circle";}
+			})
+
+			var size = (data_set, function(d) {
+				return size_scale(d[0]*d[4]);
+			})
+
+  			svg.selectAll(".point")
+      			.data(data_set)
+    			.enter().append("path")
+      			.attr("class", "point")
+      			.attr("d", d3.svg.symbol().type(shape))
+      			.attr("transform", function(d) { return "translate(" + (xscale(d[0])+3) + "," + yscale(d[4]) + ")"; })
+      			.attr("stroke", function(d){
+      				if (d[2] >= 6) {return "blue";}
+      				else {return "red";}
+      			});
+
+			var xAxis = d3.svg.axis()
+							  .scale(xscale)
+							  .orient("bottom")
+							  .ticks(5);
+
+			svg.append("text")
+              .attr("transform", "translate("+ (width-legendSize - padding) + "," + height+")")
+              .style("text-anchor", "end")
+              .text("pH");
+
+      		 svg.append("text")
+              .attr("transform", "translate(60,50)rotate(-90)")
+              .style("text-anchor", "end")
+              .text("Sulphates");
+
+              svg.append("text")
+              .attr("transform", "translate("+ ((width-legendSize)/2) + "," + (padding-15)+")")
+              .style("text-anchor", "end")
+              .text("Sulphates vs pH (log scaled)");
+
+
+
+			var yAxis = d3.svg.axis()
+							  .scale(yscale)
+							  .orient("left")
+							  .ticks(5);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(3," + (height - padding) + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + (padding+3) + ",0)")
+				.call(yAxis);
+
+
+
+	var legendGroup = svg.append('g')
+                         .attr('class', 'legend')
+                         .attr('transform', "translate(700, 10)");
+
+	var legendEntry = legendGroup.selectAll('g')
+                                 .data(labels);
+
+	legendEntry.enter().append("g")
+                    .attr("class", "legend-entry")
+                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+	legendEntry.append("path")
+                      .attr("class", "dot")
+                      .attr("d", d3.svg.symbol().type((d) => { return d[2] }))
+                      .attr("stroke", function (d) {return d[1];})
+                      .attr("fill" , "white");
+
+	legendEntry.append("text")
+                      .attr("transform", "translate(10, 3)")
+                      .text(function(d) {return d[0];});
+
+})
+
+		</script>
+	</body>
+</html>
+
+
+
+

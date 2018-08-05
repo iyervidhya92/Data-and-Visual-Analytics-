@@ -1,0 +1,12 @@
+Average Degree : 1.103
+Average degree is the average number of links per node
+
+Network Diameter : 6
+Network Diameter is the shortest distance between the most distant nodes in the network
+
+Graph Density : 0.002
+It refers to the ratio of the number of existing edges and the number of all possible edges between any two nodes.
+
+Avg Path length : 3.825
+It refers to the average number of steps visited along the shortest paths for all possible pairs of nodes in the network.
+

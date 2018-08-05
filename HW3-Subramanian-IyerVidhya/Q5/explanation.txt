@@ -1,0 +1,14 @@
+5b)
+Comparing the metrics of the two models with and without cleaning the dataset:
+
+It clearly can be seen that the error has increased when we do not clean the dataset before running.
+
+Cleaning a dataset removes the inconsistencies in the dataset and hence provides a better evaluation and hence the 
+errors reduce.Hence it is considered an important step for data analytics.
+
+
+5c)
+Bayesian Regression Model provides better results than the Linear Regression Model.
+
+As Bayesian takes the prior probability distribution into consideration, 
+it becomes a superior model compared to Linear Regression. Bayesian Regression performs better with complex models. 

@@ -1,0 +1,3 @@
+Linearly scaling the nodes with degree resulted in extremely small nodes for degree 
+
+Logarithmic, power or sqrt scales wouldn't work well in such a case. 

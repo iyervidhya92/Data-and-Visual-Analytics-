@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link href="interactive.css" rel="stylesheet">
+<style> 
+.x_axis {
+    font-family: "Times New Roman ", Times, serif;
+    font-size: 18px;
+}
+.line_path{
+  stroke: blue;
+  stroke-width: 2;
+  fill:none;
+}
+.y path,
+.y line {
+    stroke: white;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+.x_axis path,
+.x_axis line {
+    stroke: black;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+.y_axis path,
+.y_axis line {
+    stroke: black;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.x_label {}
+.y_label {}
+
+.rectangle {
+    fill: blue;
+}
+.rectangle:hover {
+    fill: grey;
+}
+
+
+</style>
+<body>
+<script src="../lib/d3.v3.min.js"></script>
+<script src="../lib/d3.tip.v0.6.3.js"></script>
+<script>
+  
+
+var data = [{franchise:'Harry Potter', revenue: {1:974, 2:878, 3:796, 4:896, 5:942, 6:935, 7:960, 8:1341 }},
+{franchise:'Transformers', revenue: {1:708, 2:836, 3:1123, 4:1104, 5:603 }},
+{franchise:'Mission Impossible', revenue: {1:457, 2:549, 3:397, 4:694, 5:700 }},
+{franchise:'Fast and the Furious', revenue: {1:206, 2:236, 3:363, 4:363, 5:629, 6:789, 7:1516, 8:1237 }},
+{franchise:'Hunger Games', revenue: {1:677, 2:864, 3:766, 4:650 }},
+{franchise:'Pirates of the Caribbean', revenue: {1:634, 2:1066, 3:963, 4:1045, 5:794 }}];
+
+data.forEach(function(d){
+      d.franchise = d.franchise;
+      d.money = 0
+      for(i in d.revenue)
+      {
+        d.money+=d.revenue[i]
+      }});
+
+var margin = {top: 80, right: 180, bottom: 80, left: 180},
+    width = 1200 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
+
+var padding = 10;
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+var x = d3.scale.linear()
+    .domain([0, d3.max(data, function(d){
+        return (d.money);
+    })])
+    .range([0, width-150]);
+
+var y = d3.scale.ordinal()
+    .domain(data.map(function(d){ return d.franchise;}))
+    .rangeBands([0,height]);
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+svg.append("g")
+  .attr("class", "y")
+    .call(yAxis);
+
+svg.selectAll("rectangle")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class","rectangle")
+    .attr("value", function(d, i){
+        return i;
+    })
+    .attr("width", height/data.length - padding)
+    .attr("height", function(d){
+        return x(d.money);
+    })
+    .attr("y", 0)
+    .attr("x", function(d, i){
+        return -(height / data.length) * (i+1);
+    })
+    .attr("transform", "rotate(-90)" )
+    .on("mouseover", function(D){
+    
+            D.index = []
+            D.amount = []
+          
+            data.forEach(function(d){
+                
+            if(D.franchise == d.franchise)
+            {
+              for(i in d.revenue)
+              {
+                D.index.push(i);
+                D.amount.push(d.revenue[i])
+              }
+            }
+            });
+
+
+    var number_of_movies = ["1", "2", "3", "4", "5", "6", "7", "8"]
+            
+    var x_line = d3.scale.ordinal().range([740, 760, 780, 800, 820, 840, 860, 880]);
+    var y_line = d3.scale.linear().range([height/4, 0]);
+
+    var xAxis = d3.svg.axis().scale(x_line)
+        .orient("bottom").ticks(10);
+
+    var yAxis = d3.svg.axis().scale(y_line)
+        .orient("left").ticks(3);
+
+    x_line.domain(number_of_movies);
+    y_line.domain([0, d3.max(D.amount)]);
+
+
+    var valueline = d3.svg.line()
+        .x(function(d,i){
+              return x_line(number_of_movies[i]);
+          })
+        .y(function(d,i){
+              return y_line(D.amount[i]);
+          });
+    
+        svg.append("path")
+            .attr("class", "line_path")
+            .attr("d", valueline(D.amount))
+        .attr("transform", "translate(0," + 130 +")");
+
+        svg.append("g")
+            .attr("class", "x_axis")
+            .attr("transform", "translate(0," + (height - 200) + ")")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y_axis")
+            .attr("transform", "translate(" + (width - 100) + "," + 130 +")")
+            .call(yAxis)
+      
+      svg.append("text")
+                  .attr("class", "x_label")
+                  .attr("text-anchor", "end")
+                  .attr("x", width + 50)
+                  .attr("y", height/5 + 190)
+                  .text("Movie")
+                  .style("font-size", "14px");
+
+      svg.append("text")
+                  .attr("class", "y_label")
+                  .attr("text-anchor", "end")
+                  .attr("x", width - 150)
+                  .attr("y", height/5 + 40)
+                  .text("Revenue")
+                  .style("font-size", "14px");
+        
+
+    })
+        .on("mouseout", function(d){
+          svg.select(".line_path").remove();
+          svg.select(".x_axis").remove();
+          svg.select(".y_axis").remove();     
+          svg.select(".x_label").remove();      
+          svg.select(".y_label").remove();      
+      });
+
+
+svg.append("g") 
+    .selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .text(function(d){
+        return "$ " + (d.money);
+    })
+    .attr("x", 15)
+    .attr("y", function(d, i){
+        return (height / data.length) * (i+1) - (height/data.length - padding)/2;
+    })
+    .attr("font-size", "17px")
+    .attr("fill", "white");
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+Used Force Atlas with Repulsion Strength at 1000.00 and checked asjust by sizes.
+Used "Eccentricity" attribute for Nodes-Partition as they specify a color based on the distance bewtween nodes.
+Labels for each node has been specified by filtering out the other labels and a suitable font is selected.

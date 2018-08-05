@@ -1,0 +1,8 @@
+The table contains the details of the competetion finalist artists in the year 2007. 
+The place order was sorted.
+The girdlines have been removed for a clear visualization. 
+The numbers were left and right aligned and brought down to 2 decimal places 
+The text for Artist and Songs were text wrapped for fitting in one page
+
+
+

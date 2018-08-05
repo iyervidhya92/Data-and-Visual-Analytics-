@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.x_axis path{
+  fill: none;
+}
+.y_axis path{
+  fill: none;
+}
+
+.label {
+  font-weight: bold;
+}
+
+text.legend {
+  font-size: 14px;
+}
+
+text.axislabel {
+    font-size: 16px;
+    font-weight: bold;
+}
+.title {
+    position: relative;
+    left: 200px;
+    font-size: 20px;
+    font-weight: bold
+}
+
+.select {
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+
+h2 {
+	text-align: center;
+}
+
+text.mono {
+       font-size: 9pt;
+       font-family: Consolas, courier;
+       fill: #aaa;
+     }
+</style>
+<body>
+<h2 id ="select">Game of Thrones House-Wise Appearances</h2>
+
+<div id="chart"></div>
+<div id="season"></div>
+
+<script src="../lib/d3.v3.min.js"></script>
+
+<script>
+
+
+var     margin = {top: 0, right: 100, bottom: 150, left: 100},
+	    width = 960 - margin.left - margin.right,
+	    height = 500 - margin.top - margin.bottom + 100;
+        gridSize = height / 10;
+	    width2 = 40;
+
+
+var xscale = d3.scale.linear()
+        .range([0, width])
+        .domain([1,10]);
+    yscale = d3.scale.linear()
+        .range([0, height]);
+
+
+        season = ["Season 1", "Season 2", "Season 3", "Season 4", "Season 5", "Season 6"];
+
+        colors = ["rgb(247,252,240)",
+                "rgb(224,243,219)",
+                "rgb(204,235,197)",
+                "rgb(168,221,181)",
+                "rgb(123,204,196)",
+                "rgb(78,179,211)",
+                "rgb(43,140,190)",
+                "rgb(8,104,172)",
+                "rgb(8,64,129)"];
+
+        color_len = colors.length;
+
+var families = {'1': 'Baratheon', '2': 'Greyjoy', '3': 'Lannister', '4': 'Stark', '5': 'Targaryen', '6': 'Tyrell'};
+
+
+var svg = d3.select("#season").html("")
+        .append("svg")
+	    .attr("width", width + margin.left + margin.right)
+	    .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+	    .attr("transform", "translate(" + margin.left + ")")
+
+var select = d3.select('#chart')
+	           .append('select')
+	  	       .attr('class','select')
+	           .on('change',change_now)
+
+var options = select.selectAll('option')
+		            .data(season).enter()
+		            .append('option')
+			        .text(function (d) { return d; });
+
+change_now()
+
+
+function change_now(){
+	svg.selectAll('.tile').remove();
+	svg.selectAll('.legend').remove();
+
+	value = d3.select('select')
+              .property('value').replace(/[^0-9]+/g, '');
+
+
+	d3.csv("heatmap.csv", function(error, data_set) {
+
+	    data_set = data_set.filter(function(d) {return d.season == value;});
+
+        var data = [];
+
+
+	    data_set.forEach(function(d) {d["episode"] = +d["episode"];
+		    d["Baratheon"] = +d["Baratheon"];data.push([1, d["Baratheon"], d["episode"], d["season"]]);
+		    d["Greyjoy"] = +d["Greyjoy"];data.push([2, d["Greyjoy"], d["episode"], d["season"]]);
+		    d["Lannister"] = +d["Lannister"];data.push([3, d["Lannister"], d["episode"], d["season"]]);
+		    d["Stark"]= +d["Stark"];data.push([4, d["Stark"], d["episode"], d["season"]]);
+		    d["Targaryen"] = +d["Targaryen"];data.push([5, d["Targaryen"], d["episode"], d["season"]]);
+		    d["Tyrell"] = +d["Tyrell"];data.push([6, d["Tyrell"], d["episode"], d["season"]]);
+	    });
+
+
+
+        yscale.domain(d3.extent(data, function(d) { return d[0]} ));
+        yscale.domain([yscale.domain()[0] - 1, yscale.domain()[1] + 1]);
+
+	    var color_scale = d3.scale.quantile()
+	                             .domain([0, data - 1, d3.max(data, function (d) { return d[1]; })])
+	                             .range(colors);
+
+        svg.selectAll(".tile")
+	       .data(data)
+	       .enter().append("rect")
+	       .attr("class", "tile")
+	       .attr("x", function(d) { return xscale(d[2]); })
+	       .attr("y", function(d) { return yscale(d[0]); })
+	       .attr("rx", 5)
+	       .attr("ry", 10)
+	       .attr("width", gridSize+35)
+	       .attr("height", gridSize +18)
+	       .style("fill", function(d) {  return color_scale(d[1]); })
+	  	   .style("stroke", "white")
+	  	   .style("stroke-width","3");
+
+
+        svg.append("text")
+	       .attr("x", 10)
+	       .attr("y", height+100)
+	       .attr("width", 100)
+	       .attr("height", 40)
+	      .attr("class", "label")
+	       .text("No of Appearances");
+
+
+	  	var legend = svg.selectAll("#legend")
+	  	                .attr('width', width2)
+	  	                .text("hello")
+	  	                .attr('x', function(d,i){
+	  	                                return i * width2;
+	  	                            })
+	                    .data([0].concat(color_scale.quantiles()), function(d) { return d; })
+	                    .enter().append("g")
+	                    .attr("class", "legend")
+	                    .attr("transform", function(d, i) { return "translate(80,20)"; });
+
+
+	    legend.append("rect")
+	          .attr("x", function(d, i) { return i * gridSize; })
+	          .attr("y", margin.top + height +100)
+	          .attr("width", gridSize)
+	          .attr("height", gridSize / 2)
+	          .style("fill", function(d, i) { return colors[i]; })
+              .style("stroke", "black");
+
+	    legend.append("text")
+              .text(function(d) { return Math.round(d); })
+	          .attr("x", function(d, i) { return (i * gridSize) + 0; })
+	          .attr("y", height + gridSize + 50);
+
+
+        svg.append("g")
+	      .attr("class", "y_axis")
+	      .call(d3.svg.axis().scale(yscale).tickFormat(function(d,i){return families[d]}).orient("left"))
+            .attr("transform", "translate(0,30)")
+	      .append("text");
+
+        svg.append('text')
+            .attr("class", "label")
+	        .attr("x",-250)
+	        .attr("y", -90)
+            .attr("transform", "rotate(-90)")
+	        .text("Houses");
+
+
+	    svg.append("g")
+	      .attr("class", "x_axis")
+	      .attr("transform", "translate(45," + height + ")")
+	      .call(d3.svg.axis().scale(xscale).orient("bottom")).append("text")
+
+	    svg.append('text')
+            .attr("class", "label")
+	        .attr("x", width/2)
+	        .attr("y", height + 50)
+            .text("Episode");
+
+
+
+		});
+	}
+</script>
+
+</body>

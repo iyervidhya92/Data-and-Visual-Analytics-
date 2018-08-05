@@ -1,0 +1,5 @@
+1) Drag the data(xaxis) from the data view to the x-axis 
+2) Drag the columns(yaxis) to the Measures section from the filter 
+3) The plots are now appended for every attribute
+4) The caption is removed and the title is changed to songs characteristics
+5) The color is added using the color tab on the left so each attribute is uniquely different.

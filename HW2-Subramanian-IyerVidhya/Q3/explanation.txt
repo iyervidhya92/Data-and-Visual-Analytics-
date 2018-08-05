@@ -1,0 +1,5 @@
+3C) The log scale is helpful when the range of y values is large. Sqrt scale should be used when you want to observe low values.
+It could be more  to visualize values square root changes as it is faster than that of log .
+The square root scale is useful when the range is relatively smaller or when some 
+values are zero. The log scale cannot handle this case and hence has to be clamped to a value. 
+Log Scale facilitates in identifying trending among the higher values

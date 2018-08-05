@@ -1,0 +1,6 @@
+Read the data into a dataframes for incoming and outgoing nodes and their weights.
+These dataframes are then filtered to make sure that the weights are equal or greater than 10.
+Then these dataframes are grouped and aggregated by the average of the total weights.
+The dataframe is then joined by the node id and the calculation for the difference of the average
+between the incoming weights and outgoing weights.
+The final result is obtained by filling nulls with 0s and converting the data frames to tab separated strings

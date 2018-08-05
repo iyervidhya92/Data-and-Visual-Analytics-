@@ -1,0 +1,83 @@
+
+****************************************
+Part A
+
+Linear Regression - 
+	Training Accuracy: 86%
+	Testing Accuracy: 82%
+
+SVM -
+	Training Accuracy: 100%
+	Testing Accuracy: 80%
+
+MLP - 
+	Training Accuracy: 93%
+	Testing Accuracy: 90%
+
+Random Forest - 
+	Training Accuracy: 100%
+	Testing Accuracy: 96%
+
+****************************************
+Part B - Hyperparameter tuning
+
+Random Forest - 
+	n_estimators: 
+		What it does (at most 25 words): The number of trees in the ensemble to find prediction. Higher trees is better but excessive numbers don't yield further improvements.
+		Values tested (at least 3): [10,20,30]
+
+	max_depth:
+		What it does: Prunes the tree depth to not exceed this number. Prevents overfitting. Reduces the training time if data is too diverse.
+		Values tested (at least 3): [10,20,30]
+		
+	Best combination of parameter values:
+		n_estimators: 30
+		max_depth: 20
+
+	Testing Accuracy before tuning (default parameters): 96%
+	Testing Accuracy after tuning: 96%
+
+
+SVM -
+	Kernels: 
+		What it does: Specifies the high-dimensional implicit feature space for the SVM. Linear function or an exponential (rbf) are tested.
+		Values tested: rbf, linear
+	C: 
+		What it does: Penalty parameter. This is cost of misprediction and tells the SVM how much to avoid misprediction. High C makes fitting harder.
+		Values tested (at least 3): [0.0001, 0.1, 10]
+		
+	Best combination of parameter values: 
+		Kernel: linear
+		C: 0.0001
+	
+	Testing Accuracy before tuning  (default parameters): 80%
+	Testing Accuracy after tuning: 85%
+
+
+****************************************
+Part C
+
+For your SVM's CV run from part B, state the highest mean testing accuracy 
+across the sets of parameter values and its corresponding mean train score and mean fit time. 
+
+SVM's highest mean testing/cross-validated accuracy: 85%
+SVM's mean train score: 80%
+SVM's mean fit time: 0.6
+
+****************************************
+Part D
+
+Tuned SVM's testing accuracy BEFORE preprocessing: 85%
+Tuned SVM's testing accuracy AFTER preprocessing: 80%
+Why you think it increased, decreased, or stayed the same: 
+It decreased because the tuned parameters caused the model to overfit. The new C value is very now, which means the penalty for misprediction is high. Thus, the SVM tried fitting the training data more finely and resulted in testing accuracy being reduced.
+****************************************
+Part E
+
+Best Classifier: RandomForestClassifier
+Why: 1. The accuracy is good for both training and testing data. It means it has learnt the data well without overfitting. 2. The training time is marginally higher than linear regression. 3. Tuning does not affect the results much meaning it is robust to change in parameters.
+
+
+
+
+
